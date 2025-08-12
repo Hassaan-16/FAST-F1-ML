@@ -3,51 +3,6 @@ import { getUpcomingRaces } from './services/api';
 import './App.css';
 
 function App() {
-  useEffect(() => {
-    const canvas = document.querySelector('.waves-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    function drawWave(amplitude, frequency, phase, color, yOffset) {
-      ctx.beginPath();
-      for (let x = 0; x < width; x++) {
-        let y = amplitude * Math.sin((x * frequency + phase)) + yOffset;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
-    let animationId;
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      const time = Date.now() * 0.002;
-      drawWave(30, 0.02, time * 2, '#ed1c24', height * 0.2);
-      drawWave(20, 0.018, time * 1.5, '#ff9f1c', height * 0.25);
-      drawWave(15, 0.015, time, '#fff', height * 0.3);
-      animationId = requestAnimationFrame(animate);
-    }
-    animate();
-
-    function handleResize() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
   const [races, setRaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,7 +34,7 @@ function App() {
       <div className="waves">
         <canvas className="waves-canvas"></canvas>
       </div>
-      <header className="main-header" style={{ fontFamily: 'F1 Regular, Arial, sans-serif' }}>
+      <header className="main-header" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', padding: '30px 20px' }}>
         <div className="header-left">
           <img src={process.env.PUBLIC_URL + '/topleft.png.png'} alt="F1 Logo" className="f1-logo" />
         </div>
@@ -106,6 +61,18 @@ function App() {
           </div>
         </div>
       </header>
+      <div style={{ 
+        textAlign: 'center', 
+        marginTop: '20px',
+        fontFamily: 'F1 Regular, Arial, sans-serif',
+        fontSize: '2.5rem',
+        fontWeight: 'bold',
+        color: '#fff',
+        textTransform: 'uppercase',
+        letterSpacing: '2px'
+      }}>
+        F1 RACE SCHEDULE
+      </div>
       {/* ...existing code for races and footer... */}
       {loading ? (
         <p>Loading races...</p>
@@ -120,8 +87,22 @@ function App() {
           ))}
         </ul>
       )}
-      <footer className="footer">
-        <p>&copy; 2025 F1 Race Schedule. All rights reserved.</p>
+      <footer className="footer" style={{
+        backgroundImage: `url(${process.env.PUBLIC_URL + '/footer.png'})`,
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#000',
+        minHeight: '200px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#fff',
+        fontFamily: 'F1 Regular, Arial, sans-serif'
+      }}>
+        <p style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: '10px 20px', borderRadius: '5px' }}>
+          &copy; 2025 F1 Race Schedule. All rights reserved.
+        </p>
       </footer>
     </div>
   );
