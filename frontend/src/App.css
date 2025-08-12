@@ -1,5 +1,145 @@
+@font-face {
+  font-family: 'F1 Regular';
+  src: url('../public/Formula1-Regular-1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+.footer {
+  width: 100%;
+  background: rgba(30, 30, 47, 0.85);
+  color: #fff;
+  text-align: center;
+  padding: 16px 0;
+  font-size: 1rem;
+  z-index: 100;
+}
+/* New Search Box Styles */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin-left: auto;
+}
+.search-txt {
+  border: none;
+  background: none;
+  outline: none;
+  color: #fff;
+  font-size: 18px;
+  padding: 8px 18px;
+  width: 0;
+  transition: width 0.4s;
+}
+.search-btn {
+  background: #222;
+  border: none;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  transition: background 0.3s;
+}
+.search-box:hover .search-txt,
+.search-txt:focus {
+  width: 200px;
+  background: #333;
+  border-radius: 10px 0 0 10px;
+}
+/* Search Bar Styles Converted from LESS to CSS */
+.search {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  z-index: 10;
+}
+.search * {
+  outline: none;
+  box-sizing: border-box;
+}
+.search__wrapper {
+  position: relative;
+}
+.search__field {
+  width: 50px;
+  height: 50px;
+  color: transparent;
+  font-family: Lato, Arial, sans-serif;
+  font-size: 1.35em;
+  padding: .35em 50px .35em 0;
+  border: 1px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.search__field:focus {
+  border-bottom-color: #ccc;
+  width: 50vw;
+  color: #2b2b2b;
+  cursor: default;
+}
+.search__icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #e9f1f4;
+  width: 50px;
+  height: 50px;
+  font-size: 1.35em;
+  text-align: center;
+  border-radius: 50%;
+  pointer-events: none;
+  display: inline-block;
+  transition: background-color 0.2s ease-in-out;
+  line-height: 50px;
+}
+.search__field::placeholder {
+  color: #b0b0b0;
+  font-size: .95em;
+  font-weight: normal;
+  opacity: 1;
+}
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px 0 32px;
+}
+
+.f1-logo {
+  height: 48px;
+  width: auto;
+  margin-right: 32px;
+}
+
+.search-race {
+  padding: 8px 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid #ff9f1c;
+  outline: none;
+  background: #1f0021;
+  color: #fff;
+  margin-left: 16px;
+  transition: border-color 0.3s;
+}
+.search-race:focus {
+  border-color: #ff1a1a;
+}
 body {
-  background-color: #212121;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'F1 Regular', Arial, sans-serif;
+  background: hsla(296, 100%, 6%, 1);
+  background: linear-gradient(90deg, hsla(296, 100%, 6%, 1) 0%, hsla(5, 90%, 24%, 1) 100%);
+  background: -moz-linear-gradient(90deg, hsla(296, 100%, 6%, 1) 0%, hsla(5, 90%, 24%, 1) 100%);
+  background: -webkit-linear-gradient(90deg, hsla(296, 100%, 6%, 1) 0%, hsla(5, 90%, 24%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#1F0021", endColorstr="#751006", GradientType=1 );
 }
 
 .race-list {
@@ -8,17 +148,54 @@ body {
   max-width: 800px;
   margin: 0 auto;
 }
+
 .race-list li {
-  background: #424242;
-  margin: 10px;
-  padding: 15px;
-  border-radius: 8px;
+  background: rgba(30, 30, 47, 0.85);
+  margin: 16px 0;
+  padding: 20px;
+  border-radius: 16px;
   color: #fff;
+  border: 3px solid #ff1a1a;
+  box-shadow: 0 4px 24px rgba(255, 26, 26, 0.15);
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s, border-color 0.3s, transform 0.3s;
+  position: relative;
+  overflow: hidden;
 }
-.page-title {
+
+.race-list li:hover {
+  background: rgba(255, 26, 26, 0.95);
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(255, 26, 26, 0.35);
+  border-color: #fff;
+  transform: scale(1.04) rotate(-1deg);
+  animation: pulse 0.5s;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+  100% { transform: scale(1.04) rotate(-1deg); }
+}
+
+.page-title.custom-title {
   text-align: center;
-  margin-top: 24px;
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #d32f2f;
+  margin-top: 32px;
+  font-size: 3rem;
+  font-family: 'F1 Regular', Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #ff9f1c;
+  background: none;
+  text-shadow: 0 2px 8px rgba(255, 26, 26, 0.2);
+  transition: color 0.3s;
+}
+
+.page-title.custom-title:hover {
+  background: linear-gradient(90deg, #fff 0%, #ff1a1a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 4px 16px rgba(255, 26, 26, 0.4);
 }
