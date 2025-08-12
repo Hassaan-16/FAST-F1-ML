@@ -22,7 +22,18 @@ Backend will run at: http://localhost:8000
 
 * pip install      *
 
+- pip install django
+
+- pip install djangorestframework
+
+- pip install django-cors-headers
+
+- pip install fastf1
+
 - python manage.py runserver ( or py manage.py runserver)
+
+- run this to allow scripts in current terminal to run
+  ( Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process )
 
 ## Frontend Setup
 Install Node.js dependencies ( first time use only * )
@@ -33,7 +44,11 @@ Frontend will run at: http://localhost:3000
 
 ( first time use only * )
 * npm install      *
-* npm install axios chart.js react-chartjs-2 @mui/material @emotion/react @emotion/styled react-router-dom      *
+* npm install axios
+
+* (npm install chart.js react-chartjs-2 @mui/material @emotion/react @emotion/styled) - not required rn
+
+* npm install react-router-dom      *
 
 - npm start
 
