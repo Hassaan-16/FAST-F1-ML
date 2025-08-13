@@ -89,6 +89,47 @@ def full_calendar(request):
             'hint': 'Ensure FastF1 is properly installed and internet connection is active'
         }, status=500)
 
+@api_view(['GET'])
+def drivers(request):
+    try:
+        year = datetime.now().year
+        session = fastf1.get_session(year, 1, 'R')  # Get first race of current year
+        session.load(telemetry=False, weather=False)  # Load minimal data
+        
+        drivers_data = []
+        for driver in session.drivers:
+            try:
+                info = session.get_driver(driver)
+                drivers_data.append({
+                    'id': driver,
+                    'number': info.get('DriverNumber', 'N/A'),
+                    'name': f"{info.get('FirstName', '')} {info.get('LastName', '')}".strip(),
+                    'team': info.get('TeamName', 'Unknown Team'),
+                    'country': info.get('Country', 'Unknown'),
+                    'code': info.get('Abbreviation', info.get('LastName', '')[:3].upper())
+                })
+            except Exception as e:
+                continue  # Skip problematic drivers
+        
+        if not drivers_data:
+            return Response({
+                'status': 'error',
+                'message': 'No driver data available'
+            }, status=404)
+            
+        return Response({
+            'status': 'success',
+            'year': year,
+            'drivers': drivers_data
+        })
+        
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': str(e),
+            'hint': 'This might be due to network issues or missing data'
+        }, status=500)
+
 def home(request):
     return JsonResponse({
         'message': 'Welcome to F1 API',

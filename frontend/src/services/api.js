@@ -27,6 +27,16 @@ export const getTopDrivers = async (limit = 3) => {
   return response.data;
 };
 
+export const getDrivers = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/drivers/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching drivers:', error);
+    throw error;
+  }
+};
+
 export const getTopTeams = async (limit = 3) => {
   const response = await axios.get(`/api/standings/teams?limit=${limit}`);
   return response.data;
