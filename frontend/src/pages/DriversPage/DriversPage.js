@@ -38,12 +38,28 @@ const DriversPage = () => {
       <div className="drivers-grid">
         {drivers.map(driver => (
           <div className="driver-card" key={driver.id}>
-            <div className="driver-number">{driver.number || 'N/A'}</div>
-            <h3>{driver.name || 'Unknown Driver'}</h3>
-            <p>{driver.team || 'Unknown Team'}</p>
-            <div className="driver-meta">
-              <span>{driver.country || 'Unknown'}</span>
-              <span>{driver.code || ''}</span>
+            <div className="driver-image-container">
+              {driver.headshotUrl ? (
+                <img
+                  src={driver.headshotUrl}
+                  alt={driver.name}
+                  className="driver-image"
+                  onError={(e) => {
+                    e.target.src = '/default-driver.png';
+                    e.target.onerror = null;
+                  }}
+                />
+              ) : (
+                <div className="driver-number-badge">{driver.number}</div>
+              )}
+            </div>
+            <div className="driver-info">
+              <h3>{driver.name}</h3>
+              <p className="driver-team">{driver.team}</p>
+              <div className="driver-meta">
+                <span className="driver-number">#{driver.number}</span>
+                <span className="driver-code">{driver.code}</span>
+              </div>
             </div>
           </div>
         ))}
