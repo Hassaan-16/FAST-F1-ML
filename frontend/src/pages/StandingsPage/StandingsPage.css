@@ -1,0 +1,68 @@
+.standings-page {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.tabs-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #333;
+}
+
+.tab {
+  padding: 0.8rem 2rem;
+  margin: 0 0.5rem;
+  cursor: pointer;
+  color: #ccc;
+  font-family: 'F1 Bold', sans-serif;
+  text-transform: uppercase;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+}
+
+.tab.active {
+  color: white;
+  border-bottom: 3px solid #e10600;
+}
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.standings-table th {
+  background-color: #333;
+  padding: 1rem;
+  text-align: left;
+  font-family: 'F1 Bold', sans-serif;
+  text-transform: uppercase;
+}
+
+.standings-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.standings-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.driver-cell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.driver-number {
+  background: #e10600;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}

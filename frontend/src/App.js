@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { getUpcomingRaces } from './services/api';
+import CalendarPage from './pages/CalendarPage/CalendarPage';
+import StandingsPage from './pages/StandingsPage/StandingsPage';
+import ResultsPage from './pages/ResultsPage/ResultsPage';
+import DriversPage from './pages/DriversPage/DriversPage';
+import TeamsPage from './pages/TeamsPage/TeamsPage';
 import './App.css';
 
 function App() {
@@ -30,81 +36,96 @@ function App() {
   );
 
   return (
-    <div className="App" style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
-      <div className="waves">
-        <canvas className="waves-canvas"></canvas>
-      </div>
-      <header className="main-header" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', padding: '30px 20px' }}>
-        <div className="header-left">
-          <img src={process.env.PUBLIC_URL + '/topleft.png.png'} alt="F1 Logo" className="f1-logo" />
+    <Router>
+      <div className="App" style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
+        <div className="waves">
+          <canvas className="waves-canvas"></canvas>
         </div>
-        <nav className="header-nav" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', textTransform: 'uppercase' }}>
-          <span className="nav-link" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', textTransform: 'uppercase' }}>Calendar</span>
-          <span className="nav-link" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', textTransform: 'uppercase' }}>Standings</span>
-          <span className="nav-link" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', textTransform: 'uppercase' }}>Results</span>
-          <span className="nav-link" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', textTransform: 'uppercase' }}>Drivers</span>
-          <span className="nav-link" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', textTransform: 'uppercase' }}>Teams</span>
-        </nav>
-        <div className="header-search">
-          <div className="search-box">
-            <input
-              className="search-txt"
-              type="text"
-              placeholder="Search Races"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{ fontFamily: 'F1 Regular, Arial, sans-serif' }}
-            />
-            <button className="search-btn" type="button">
-              <i className="fas fa-search"></i>
-            </button>
+        <header className="main-header" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', padding: '30px 20px' }}>
+          <div className="header-left">
+            <img src={process.env.PUBLIC_URL + '/topleft.png.png'} alt="F1 Logo" className="f1-logo" />
           </div>
-        </div>
-      </header>
-      <div style={{ 
-        textAlign: 'center', 
-        marginTop: '20px',
-        fontFamily: 'F1 Regular, Arial, sans-serif',
-        fontSize: '2.5rem',
-        fontWeight: 'bold',
-        color: '#fff',
-        textTransform: 'uppercase',
-        letterSpacing: '2px'
-      }}>
-        F1 RACE SCHEDULE
+          <nav className="header-nav" style={{ fontFamily: 'F1 Regular, Arial, sans-serif', textTransform: 'uppercase' }}>
+            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/calendar" className="nav-link">Calendar</Link>
+            <Link to="/standings" className="nav-link">Standings</Link>
+            <Link to="/results" className="nav-link">Results</Link>
+            <Link to="/drivers" className="nav-link">Drivers</Link>
+            <Link to="/teams" className="nav-link">Teams</Link>
+          </nav>
+          <div className="header-search">
+            <div className="search-box">
+              <input
+                className="search-txt"
+                type="text"
+                placeholder="Search Races"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{ fontFamily: 'F1 Regular, Arial, sans-serif' }}
+              />
+              <button className="search-btn" type="button">
+                <i className="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <Routes>
+          <Route path="/" element={
+            <div>
+              <div style={{ 
+                textAlign: 'center', 
+                marginTop: '20px',
+                fontFamily: 'F1 Regular, Arial, sans-serif',
+                fontSize: '2.5rem',
+                fontWeight: 'bold',
+                color: '#fff',
+                textTransform: 'uppercase',
+                letterSpacing: '2px'
+              }}>
+                UPCOMING F1 EVENTS
+              </div>
+              {loading ? (
+                <p>Loading races...</p>
+              ) : (
+                <ul className="race-list">
+                  {filteredRaces.map(race => (
+                    <li key={race.EventName}>
+                      <h2>{race.EventName}</h2>
+                      <p>Date: {new Date(race.EventDate).toLocaleDateString()}</p>
+                      <p>Location: {race.Location}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          } />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/standings" element={<StandingsPage />} />
+          <Route path="/results" element={<ResultsPage />} />
+          <Route path="/drivers" element={<DriversPage />} />
+          <Route path="/teams" element={<TeamsPage />} />
+        </Routes>
+
+        <footer className="footer" style={{
+          backgroundImage: `url(${process.env.PUBLIC_URL + '/footer.png'})`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: '#000',
+          minHeight: '200px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontFamily: 'F1 Regular, Arial, sans-serif'
+        }}>
+          <p style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: '10px 20px', borderRadius: '5px' }}>
+            &copy; 2025 F1 Race Schedule. All rights reserved.
+          </p>
+        </footer>
       </div>
-      {/* ...existing code for races and footer... */}
-      {loading ? (
-        <p>Loading races...</p>
-      ) : (
-        <ul className="race-list">
-          {filteredRaces.map(race => (
-            <li key={race.EventName}>
-              <h2>{race.EventName}</h2>
-              <p>Date: {new Date(race.EventDate).toLocaleDateString()}</p>
-              <p>Location: {race.Location}</p>
-            </li>
-          ))}
-        </ul>
-      )}
-      <footer className="footer" style={{
-        backgroundImage: `url(${process.env.PUBLIC_URL + '/footer.png'})`,
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: '#000',
-        minHeight: '200px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#fff',
-        fontFamily: 'F1 Regular, Arial, sans-serif'
-      }}>
-        <p style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: '10px 20px', borderRadius: '5px' }}>
-          &copy; 2025 F1 Race Schedule. All rights reserved.
-        </p>
-      </footer>
-    </div>
+    </Router>
   );
 }
 

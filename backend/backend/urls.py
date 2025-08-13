@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 from f1api.views import home
-
+from django.urls import re_path                     #
+from django.views.generic import TemplateView       #
 
 urlpatterns = [
     path('', home, name='home'),  # Add this line
     path('admin/', admin.site.urls),
     path('api/', include('f1api.urls')),
+    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),     #
 ]
