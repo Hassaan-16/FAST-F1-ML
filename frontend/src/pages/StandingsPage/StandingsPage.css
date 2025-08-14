@@ -1,30 +1,28 @@
-.standings-page {
-  padding: 2rem;
+/* StandingsPage.css */
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'F1 Regular', Arial, sans-serif;
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.page-container {
+  padding: 20px;
   max-width: 1000px;
   margin: 0 auto;
 }
 
-.tabs-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid #333;
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.tab {
-  padding: 0.8rem 2rem;
-  margin: 0 0.5rem;
-  cursor: pointer;
-  color: #ccc;
-  font-family: 'F1 Bold', sans-serif;
+.page-header h1 {
+  font-size: 2.5rem;
+  color: #e10600;
   text-transform: uppercase;
-  border-bottom: 3px solid transparent;
-  transition: all 0.3s;
-}
-
-.tab.active {
-  color: white;
-  border-bottom: 3px solid #e10600;
+  letter-spacing: 2px;
 }
 
 .standings-table {
@@ -33,36 +31,72 @@
 }
 
 .standings-table th {
-  background-color: #333;
-  padding: 1rem;
   text-align: left;
-  font-family: 'F1 Bold', sans-serif;
-  text-transform: uppercase;
+  padding: 10px 5px;
+  font-weight: normal;
+  color: #cccccc;
+  border-bottom: 2px solid #e10600;
 }
+
+/* Changed column order */
+.standings-table th:nth-child(1) { width: 10%; } /* PDS */
+.standings-table th:nth-child(2) { width: 30%; } /* DRIVER */
+.standings-table th:nth-child(3) { width: 15%; } /* NATIONALITY */
+.standings-table th:nth-child(4) { width: 30%; } /* TEAM */
+.standings-table th:nth-child(5) { width: 15%; } /* PTS */
 
 .standings-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #333;
+  padding: 12px 5px;
+  border-bottom: 1px solid #444;
 }
 
-.standings-table tr:hover {
+.position {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: right; /* Moved to right */
+  padding-right: 15px; /* Added spacing */
+}
+
+.driver-name {
+  font-weight: bold;
+  color: #ffffff;
+  text-align: left;
+}
+
+.team-name {
+  font-weight: bold;
+  color: #e10600;
+  text-align: left;
+}
+
+.points {
+  font-weight: bold;
+  text-align: right;
+}
+
+.nationality {
+  font-size: 0.9rem;
+  color: #aaaaaa;
+  text-align: left;
+}
+
+/* Alternate row colors */
+.standings-table tr:nth-child(even) {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.driver-cell {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+/* Hover effect */
+.standings-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-.driver-number {
-  background: #e10600;
-  color: white;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
+/* Added for better visual separation */
+.standings-table tr {
+  transition: background-color 0.2s ease;
+}
+
+/* Right-align the position header */
+.standings-table th:first-child {
+  text-align: right;
+  padding-right: 15px;
 }
