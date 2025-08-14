@@ -93,30 +93,28 @@ def full_calendar(request):
 def drivers(request):
     try:
         year = datetime.now().year
-        session = fastf1.get_session(year, 1, 'R')  # Get first race of current year
-        session.load(telemetry=False, weather=False)  # Load minimal data
+        session = fastf1.get_session(year, 1, 'R')
+        session.load(telemetry=False, weather=False)
         
         drivers_data = []
         for driver in session.drivers:
             try:
                 info = session.get_driver(driver)
+                # Get headshot URL - different methods for different FastF1 versions
+                headshot_url = getattr(info, 'HeadshotUrl', '') or info.get('HeadshotUrl', '')
+                
                 drivers_data.append({
                     'id': driver,
                     'number': info.get('DriverNumber', 'N/A'),
                     'name': f"{info.get('FirstName', '')} {info.get('LastName', '')}".strip(),
                     'team': info.get('TeamName', 'Unknown Team'),
                     'country': info.get('Country', 'Unknown'),
-                    'code': info.get('Abbreviation', info.get('LastName', '')[:3].upper())
+                    'code': info.get('Abbreviation', info.get('LastName', '')[:3].upper()),
+                    'headshotUrl': headshot_url  # Add this
                 })
             except Exception as e:
-                continue  # Skip problematic drivers
+                continue
         
-        if not drivers_data:
-            return Response({
-                'status': 'error',
-                'message': 'No driver data available'
-            }, status=404)
-            
         return Response({
             'status': 'success',
             'year': year,
@@ -126,8 +124,7 @@ def drivers(request):
     except Exception as e:
         return Response({
             'status': 'error',
-            'message': str(e),
-            'hint': 'This might be due to network issues or missing data'
+            'message': str(e)
         }, status=500)
 
 def home(request):
