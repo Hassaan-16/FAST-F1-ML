@@ -42,6 +42,16 @@ export const getTopTeams = async (limit = 3) => {
   return response.data;
 };
 
+export const getTeams = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/teams/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching teams:', error);
+    throw error;
+  }
+};
+
 export const getFullCalendar = async () => {
   try {
     const response = await API.get('http://localhost:8000/api/full-calendar/');
