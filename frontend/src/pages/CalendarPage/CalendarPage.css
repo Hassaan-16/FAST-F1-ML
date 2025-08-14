@@ -1,50 +1,140 @@
-.calendar-page {
-  padding: 20px;
-  color: white;
+/* CalendarPage.css with gradient background and enhanced hover effects */
+
+/* Gradient background from home page */
+body {
+  min-height: 100vh;
+  margin: 0;
   font-family: 'F1 Regular', Arial, sans-serif;
+  background: hsla(296, 100%, 6%, 1);
+  background: linear-gradient(90deg, hsla(296, 100%, 6%, 1) 0%, hsla(5, 90%, 24%, 1) 100%);
+  background: -moz-linear-gradient(90deg, hsla(296, 100%, 6%, 1) 0%, hsla(5, 90%, 24%, 1) 100%);
+  background: -webkit-linear-gradient(90deg, hsla(296, 100%, 6%, 1) 0%, hsla(5, 90%, 24%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#1F0021", endColorstr="#751006", GradientType=1 );
 }
 
 .loading, .error {
   text-align: center;
-  font-size: 1.5rem;
-  margin-top: 50px;
   color: white;
+  font-size: 1.2rem;
+  margin-top: 50px;
 }
 
-.error {
-  color: #ff3333;
+.calendar-page {
+  padding: 20px;
+  min-height: 100vh;
+  max-width: 1400px; /* Added to control overall width */
+  margin: 0 auto; /* Center the container */
 }
 
 .race-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, 1fr); /* Changed to exactly 4 columns */
   gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .race-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on medium screens */
+  }
+}
+
+@media (max-width: 900px) {
+  .race-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on smaller screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .race-grid {
+    grid-template-columns: 1fr; /* 1 column on mobile */
+  }
 }
 
 .race-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 10px;
+  background: rgba(30, 30, 47, 0.85);
+  border-radius: 16px;
   padding: 20px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 3px solid #ff1a1a;
+  box-shadow: 0 4px 24px rgba(255, 26, 26, 0.15);
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s, border-color 0.3s, transform 0.3s;
+  position: relative;
+  overflow: hidden;
 }
 
 .race-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 26, 26, 0.95);
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(255, 26, 26, 0.35);
+  border-color: #fff;
+  transform: scale(1.04) rotate(-1deg);
+  animation: pulse 0.5s;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+  100% { transform: scale(1.04) rotate(-1deg); }
 }
 
 .race-card h2 {
+  color: #ff9f1c;
   margin-top: 0;
-  color: #e10600; /* F1 red */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding-bottom: 10px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.race-card:hover h2 {
+  color: #fff;
 }
 
 .race-card p {
   margin: 8px 0;
+  font-size: 1rem;
+  transition: color 0.3s;
+}
+
+.race-card:hover p {
+  color: #fff;
+}
+
+.race-card p strong {
+  color: #ff9f1c;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.race-card:hover p strong {
+  color: #fff;
+}
+
+/* Search container styling */
+.search-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.search-container input {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  width: 300px;
+  font-family: 'F1 Regular', Arial, sans-serif;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.search-container input:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #ff1a1a;
+  outline: none;
+}
+
+.search-container input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }

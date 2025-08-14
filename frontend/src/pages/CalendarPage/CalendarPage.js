@@ -68,7 +68,7 @@ const CalendarPage = () => {
             <p><strong>Round:</strong> {race.round}</p>
             <p><strong>Date:</strong> {new Date(race.EventDate || race.date).toLocaleDateString()}</p>
             <p><strong>Circuit:</strong> {race.Circuit?.circuitName || race.Location}</p>
-            <p><strong>Country:</strong> {race.Circuit?.Location?.country || race.country}</p>
+            {/* Country tag has been removed from here */}
           </div>
         ))}
       </div>
