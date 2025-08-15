@@ -1,30 +1,75 @@
 // StandingsPage.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './StandingsPage.css';
+import { getDriverStandings, getConstructorStandings } from '../../services/api';
 
 const StandingsPage = () => {
-  const drivers = [
-    { pos: 1, name: "Oscar Piastri", nationality: "Australian", team: "McLaren", points: 25 },
-    { pos: 2, name: "Lando Norris", nationality: "British", team: "McLaren", points: 18 },
-    { pos: 3, name: "Max Verstappen", nationality: "Dutch", team: "Red Bull", points: 15 },
-    { pos: 4, name: "George Russell", nationality: "British", team: "Mercedes", points: 12 },
-    { pos: 5, name: "Charles Leclerc", nationality: "Monegasque", team: "Ferrari", points: 10 },
-    { pos: 6, name: "Lewis Hamilton", nationality: "British", team: "Ferrari", points: 8 },
-    { pos: 7, name: "Kimi Antonelli", nationality: "Italian", team: "Mercedes", points: 6 },
-    { pos: 8, name: "Alexander Albon", nationality: "Thai", team: "Williams", points: 4 },
-    { pos: 9, name: "Nico Hulkenberg", nationality: "German", team: "Kick Sauber", points: 2 },
-    { pos: 10, name: "Esteban Ocon", nationality: "French", team: "Haas F1 Team", points: 1 },
-    { pos: 11, name: "Fernando Alonso", nationality: "Spanish", team: "Aston Martin", points: 0 },
-    { pos: 12, name: "Lance Stroll", nationality: "Canadian", team: "Aston Martin", points: 0 },
-    { pos: 13, name: "Isack Hadjar", nationality: "French", team: "Racing Bulls", points: 0 },
-    { pos: 14, name: "Pierre Gasly", nationality: "French", team: "Alpine", points: 0 },
-    { pos: 15, name: "Liam Lawson", nationality: "New Zealander", team: "Racing Bulls", points: 0 },
-    { pos: 16, name: "Carlos Sainz", nationality: "Spanish", team: "Williams", points: 0 },
-    { pos: 17, name: "Gabriel Bortoleto", nationality: "Brazilian", team: "Kick Sauber", points: 0 },
-    { pos: 18, name: "Yuki Tsunoda", nationality: "Japanese", team: "Red Bull", points: 0 },
-    { pos: 19, name: "Oliver Bearman", nationality: "British", team: "Haas F1", points: 0 },
-    { pos: 20, name: "Jack Doohan", nationality: "Australian", team: "Alpine", points: 0 }
-  ];
+  const [driverStandings, setDriverStandings] = useState([]);
+  const [constructorStandings, setConstructorStandings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStandings = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch both standings
+        const driversResponse = await getDriverStandings();
+        const constructorsResponse = await getConstructorStandings();
+
+        console.log('API Responses:', { 
+          drivers: driversResponse.data, 
+          constructors: constructorsResponse.data 
+        });
+
+        // Set standings from API response.data
+        if (driversResponse.data?.standings) {
+          setDriverStandings(driversResponse.data.standings);
+        } else {
+          console.warn('Driver standings data missing:', driversResponse);
+          setDriverStandings([]);
+        }
+
+        if (constructorsResponse.data?.standings) {
+          setConstructorStandings(constructorsResponse.data.standings);
+        } else {
+          console.warn('Constructor standings data missing:', constructorsResponse);
+          setConstructorStandings([]);
+        }
+
+      } catch (err) {
+        console.error('Error:', err);
+        setError('Failed to load standings. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStandings();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <h1>F1 STANDINGS</h1>
+        </div>
+        <p className="loading-message">Loading standings data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <h1>F1 STANDINGS</h1>
+        </div>
+        <p className="error-message">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
@@ -41,28 +86,69 @@ const StandingsPage = () => {
         }}>F1 STANDINGS</h1>
       </div>
 
-      <table className="standings-table">
-        <thead>
-          <tr>
-            <th>PDS</th>
-            <th>DRIVER</th>
-            <th>NATIONALITY</th>
-            <th>TEAM</th>
-            <th>PTS.</th>
-          </tr>
-        </thead>
-        <tbody>
-          {drivers.map(driver => (
-            <tr key={driver.pos}>
-              <td className="position">{driver.pos}</td>
-              <td className="driver-name">{driver.name}</td>
-              <td className="nationality">{driver.nationality}</td>
-              <td className="team-name">{driver.team}</td>
-              <td className="points">{driver.points}</td>
+      <div className="standings-section">
+        <h2>DRIVERS' CHAMPIONSHIP</h2>
+        <table className="standings-table">
+          <thead>
+            <tr>
+              <th>POS</th>
+              <th>DRIVER</th>
+              <th>CODE</th>
+              <th>TEAM</th>
+              <th>PTS</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {driverStandings.length > 0 ? (
+              driverStandings.map(driver => (
+                <tr key={driver.Position}>
+                  <td className="position">{driver.Position}</td>
+                  <td className="driver-name">{driver.Driver}</td>
+                  <td className="nationality">{driver.Abbreviation}</td>
+                  <td className="team-name">{driver.Team}</td>
+                  <td className="points">{driver.Points}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="no-data">
+                  No driver standings data available
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="standings-section">
+        <h2>CONSTRUCTORS' CHAMPIONSHIP</h2>
+        <table className="standings-table">
+          <thead>
+            <tr>
+              <th>POS</th>
+              <th>TEAM</th>
+              <th>PTS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {constructorStandings.length > 0 ? (
+              constructorStandings.map(team => (
+                <tr key={team.Position}>
+                  <td className="position">{team.Position}</td>
+                  <td className="team-name">{team.Team}</td>
+                  <td className="points">{team.Points}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="no-data">
+                  No constructor standings data available
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

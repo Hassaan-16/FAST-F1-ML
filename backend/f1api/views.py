@@ -1,25 +1,40 @@
+from django.http import JsonResponse
 from django.shortcuts import render
-# an endpoint to fetch upcoming F1 races.
+from django.views.decorators.http import require_GET
+from datetime import datetime
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-import fastf1
-import pandas as pd
-from datetime import datetime
 
+import fastf1
+from fastf1 import events
+import pandas as pd
+
+
+def home(request):
+    return JsonResponse({
+        'message': 'Welcome to F1 API',
+        'endpoints': {
+            'upcoming_races': '/api/upcoming-races/',
+            'full_calendar': '/api/full-calendar/',
+            'admin': '/admin/'
+        }
+    })
+
+
+# Race/Event APIs
 @api_view(['GET'])
 def upcoming_races(request):
     try:
         fastf1.Cache.enable_cache('fastf1_cache')
-        
-        # Get current year's schedule
         current_year = pd.Timestamp.now().year
         
         try:
-            schedule = fastf1.get_event_schedule(current_year)  # Add year parameter
+            schedule = fastf1.get_event_schedule(current_year)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
-        # Filter upcoming races
+            
         upcoming = schedule[schedule['EventDate'] >= pd.Timestamp.now()]
         
         return Response({
@@ -33,26 +48,18 @@ def upcoming_races(request):
             'status': 'error',
             'message': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-# Create your views here.
 
-from django.http import JsonResponse
 
 @api_view(['GET'])
 def full_calendar(request):
     try:
-        # Configure cache (new method in FastF1 v3+)
-        cache_path = 'fastf1_cache'  # Relative to your Django project root
+        cache_path = 'fastf1_cache'
         fastf1.Cache.enable_cache(cache_path)
-        
-        # Get current year
         current_year = datetime.now().year
         
-        # Get schedule with error handling
         try:
             schedule = fastf1.get_event_schedule(current_year)
             if schedule is None or len(schedule) == 0:
-                # Try previous year if current year fails
                 schedule = fastf1.get_event_schedule(current_year - 1)
         except Exception as e:
             return Response({
@@ -60,7 +67,6 @@ def full_calendar(request):
                 'message': f"Failed to fetch schedule: {str(e)}"
             }, status=500)
 
-        # Process the schedule
         races = []
         for _, event in schedule.iterrows():
             try:
@@ -73,7 +79,7 @@ def full_calendar(request):
                     'EventFormat': str(event.get('EventFormat', 'Conventional'))
                 })
             except Exception as e:
-                continue  # Skip invalid entries
+                continue
 
         return Response({
             'status': 'success',
@@ -89,6 +95,37 @@ def full_calendar(request):
             'hint': 'Ensure FastF1 is properly installed and internet connection is active'
         }, status=500)
 
+
+@api_view(['GET'])
+def get_event_schedule(request, year=None):
+    try:
+        year = int(year) if year else datetime.now().year
+        schedule = fastf1.get_event_schedule(year)
+        return Response({
+            'status': 'success',
+            'year': year,
+            'events': schedule.to_dict('records')
+        })
+    except Exception as e:
+        return Response({'status': 'error', 'message': str(e)}, status=500)
+
+
+@api_view(['GET'])
+def get_session_results(request, year, event, session):
+    try:
+        session = fastf1.get_session(year, event, session)
+        session.load()
+        results = session.results
+        return Response({
+            'status': 'success',
+            'session': session.name,
+            'results': results.to_dict('records')
+        })
+    except Exception as e:
+        return Response({'status': 'error', 'message': str(e)}, status=500)
+
+
+# Driver APIs
 @api_view(['GET'])
 def drivers(request):
     try:
@@ -100,7 +137,6 @@ def drivers(request):
         for driver in session.drivers:
             try:
                 info = session.get_driver(driver)
-                # Get headshot URL - different methods for different FastF1 versions
                 headshot_url = getattr(info, 'HeadshotUrl', '') or info.get('HeadshotUrl', '')
                 
                 drivers_data.append({
@@ -110,7 +146,7 @@ def drivers(request):
                     'team': info.get('TeamName', 'Unknown Team'),
                     'country': info.get('Country', 'Unknown'),
                     'code': info.get('Abbreviation', info.get('LastName', '')[:3].upper()),
-                    'headshotUrl': headshot_url  # Add this
+                    'headshotUrl': headshot_url
                 })
             except Exception as e:
                 continue
@@ -127,6 +163,22 @@ def drivers(request):
             'message': str(e)
         }, status=500)
 
+
+@api_view(['GET'])
+def get_driver_standings(request, year=None):
+    try:
+        year = int(year) if year else datetime.now().year
+        standings = fastf1.get_driver_standings(year)
+        return Response({
+            'status': 'success',
+            'year': year,
+            'standings': standings.to_dict('records')
+        })
+    except Exception as e:
+        return Response({'status': 'error', 'message': str(e)}, status=500)
+
+
+# Team APIs
 @api_view(['GET'])
 def teams(request):
     try:
@@ -246,12 +298,88 @@ def teams(request):
             'message': str(e)
         }, status=500)
 
-def home(request):
-    return JsonResponse({
-        'message': 'Welcome to F1 API',
-        'endpoints': {
-            'upcoming_races': '/api/upcoming-races/',
-            'full_calendar': '/api/full-calendar/',
-            'admin': '/admin/'
+
+# Standings APIs
+@api_view(['GET'])
+def get_standings(request, type='drivers', year=None):
+    try:
+        year = int(year) if year else datetime.now().year
+        session = fastf1.get_session(year, 1, 'R')  # Get first race
+        session.load(telemetry=False, weather=False)  # Minimal data loading
+        
+        if type == 'drivers':
+            # Process driver standings from results
+            results = session.results
+            standings = results[['Abbreviation', 'FullName', 'TeamName', 'Points']]
+            standings = standings.rename(columns={
+                'Abbreviation': 'Abbreviation',
+                'FullName': 'Driver',
+                'TeamName': 'Team',
+                'Points': 'Points'
+            })
+            standings = standings.sort_values('Points', ascending=False)
+            standings['Position'] = range(1, len(standings)+1)
+            
+        elif type == 'constructors':
+            # Process constructor standings from results
+            results = session.results
+            standings = results.groupby('TeamName')['Points'].sum().reset_index()
+            standings = standings.rename(columns={
+                'TeamName': 'Team',
+                'Points': 'Points'
+            })
+            standings = standings.sort_values('Points', ascending=False)
+            standings['Position'] = range(1, len(standings)+1)
+            
+        else:
+            return Response({'status': 'error', 'message': 'Invalid standings type'}, status=400)
+        
+        return Response({
+            'status': 'success',
+            'year': year,
+            'type': type,
+            'standings': standings.to_dict('records')
+        })
+        
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': str(e),
+            'hint': 'Data might not be available yet for this year'
+        }, status=500)
+
+
+# Session/Lap Data APIs
+@api_view(['GET'])
+def get_lap_times(request, year, event, session, driver=None):
+    try:
+        session = fastf1.get_session(year, event, session)
+        session.load()
+        laps = session.laps
+        
+        if driver:
+            laps = laps.pick_driver(driver)
+            driver_info = session.get_driver(driver)
+            
+        result = {
+            'status': 'success',
+            'session': session.name,
+            'year': year,
+            'event': event,
+            'laps': laps.to_dict('records'),
+            'session_status': session.session_status,
+            'session_start_time': session.session_start_time.isoformat() if session.session_start_time else None
         }
-    })
+        
+        if driver:
+            result.update({
+                'driver': {
+                    'name': f"{driver_info['FirstName']} {driver_info['LastName']}",
+                    'number': driver_info['DriverNumber'],
+                    'team': driver_info['TeamName']
+                }
+            })
+            
+        return Response(result)
+    except Exception as e:
+        return Response({'status': 'error', 'message': str(e)}, status=500)
