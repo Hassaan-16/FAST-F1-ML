@@ -32,7 +32,16 @@ const DriversPage = () => {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>F1 DRIVERS {new Date().getFullYear()}</h1>
+        <h1 style={{
+          textAlign: 'center',
+          margin: '20px 0',
+          fontFamily: 'F1 Regular, Arial, sans-serif',
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          color: '#fff',
+          textTransform: 'uppercase',
+          letterSpacing: '2px'
+        }}>F1 DRIVERS {new Date().getFullYear()}</h1>
       </div>
 
       <div className="drivers-grid">
